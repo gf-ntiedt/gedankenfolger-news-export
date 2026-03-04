@@ -2,7 +2,7 @@
     "name": "gedankenfolger/gedankenfolger-news-export",
     "description": "Exports georgringer/news records as TYPO3 .t3d files with cross-version field mapping (v10 → v13). Provides a backend module GUI and a Symfony CLI command.",
     "type": "typo3-cms-extension",
-    "version": "13.1.0",
+    "version": "13.1.1",
     "license": [
         "GPL-2.0-or-later"
     ],
