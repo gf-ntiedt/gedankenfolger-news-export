@@ -102,16 +102,18 @@
         <br/><code>vendor/bin/typo3 cache:flush</code>
     </li>
     <li>
-        The backend module appears automatically under <strong>Web › News Export</strong> for all backend users.
+        On <strong>TYPO3 12 / 13</strong>: The backend module appears automatically under <strong>Web › News Export</strong> for all backend users.
+        On <strong>TYPO3 11</strong>: The backend module is not available — use the CLI command instead (see <a href="#cli">CLI Command</a>).
     </li>
 </ol>
 
 <h3 id="usage">
     Usage
 </h3>
+<p><em>Note: On <strong>TYPO3 11</strong> the backend module is not available. Use the <a href="#cli">CLI command</a> instead.</em></p>
 <ol>
     <li>
-        Open <strong>Web › News Export</strong> in the TYPO3 backend.
+        Open <strong>Web › News Export</strong> in the TYPO3 backend (TYPO3 12 / 13 only).
     </li>
     <li>
         Select a storage page in the <strong>page tree</strong> (or enter PIDs manually in the form).
