@@ -77,10 +77,16 @@
     Requirements
 </h3>
 <ul>
-    <li><strong>TYPO3 CMS</strong>: <code>^13.0</code></li>
+    <li><strong>TYPO3 CMS</strong>: <code>^11.5 || ^12.0 || ^13.0</code></li>
     <li><strong>PHP</strong>: <code>^8.1</code></li>
-    <li><strong>typo3/cms-impexp</strong>: <code>^13.0</code> (ships with TYPO3 core)</li>
-    <li><strong>georgringer/news</strong>: <code>^10.0</code> or <code>^13.0</code> (must be installed on the source system)</li>
+    <li><strong>typo3/cms-impexp</strong>: <code>^11.5 || ^12.0 || ^13.0</code> (ships with TYPO3 core)</li>
+    <li><strong>georgringer/news</strong>: <code>^10.0 || ^13.0</code> (must be installed on the source system)</li>
+</ul>
+<p><strong>Version support matrix:</strong></p>
+<ul>
+    <li><strong>TYPO3 13</strong>: Backend module + CLI — full support</li>
+    <li><strong>TYPO3 12</strong>: Backend module + CLI — full support</li>
+    <li><strong>TYPO3 11</strong>: CLI only — the backend module is not registered on v11; use <code>vendor/bin/typo3 news:export</code> instead</li>
 </ul>
 
 <h3 id="install">

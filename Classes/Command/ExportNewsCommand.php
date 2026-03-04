@@ -248,6 +248,7 @@ final class ExportNewsCommand extends Command
         }
 
         $extension = match ($fileType) {
+            'xml'            => 'xml',
             't3d_compressed' => 't3d_compressed',
             default          => 't3d',
         };

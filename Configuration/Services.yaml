@@ -16,6 +16,21 @@ services:
   # CLI command – explicitly tagged so that the Symfony console discovers it.
   # `schedulable: true` makes the command available in the TYPO3 Scheduler.
   # -------------------------------------------------------------------------
+  # -------------------------------------------------------------------------
+  # Backend module controller – tagged explicitly so the module router finds it
+  # in TYPO3 12 and 13.  In TYPO3 13 this replaces the #[AsController] PHP
+  # attribute; in TYPO3 12 the attribute class does not exist, so the tag here
+  # is the only registration path.  In TYPO3 11 this tag is simply ignored and
+  # the module is not registered (CLI-only usage for v11 is intentional).
+  # -------------------------------------------------------------------------
+  Gedankenfolger\GedankenfolgerNewsExport\Controller\NewsExportController:
+    tags:
+      - name: 'backend.controller'
+
+  # -------------------------------------------------------------------------
+  # CLI command – explicitly tagged so that the Symfony console discovers it.
+  # `schedulable: true` makes the command available in the TYPO3 Scheduler.
+  # -------------------------------------------------------------------------
   Gedankenfolger\GedankenfolgerNewsExport\Command\ExportNewsCommand:
     tags:
       - name: 'console.command'

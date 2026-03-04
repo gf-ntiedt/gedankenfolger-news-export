@@ -7,7 +7,6 @@ namespace Gedankenfolger\GedankenfolgerNewsExport\Controller;
 use Gedankenfolger\GedankenfolgerNewsExport\Service\ExportOptions;
 use Gedankenfolger\GedankenfolgerNewsExport\Service\NewsExportService;
 use Psr\Http\Message\ResponseInterface;
-use TYPO3\CMS\Backend\Attribute\AsController;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 use TYPO3\CMS\Core\FormProtection\FormProtectionFactory;
 use TYPO3\CMS\Core\Pagination\ArrayPaginator;
@@ -38,8 +37,13 @@ use ZipArchive;
  * - All user-supplied integers are cast via `ExportOptions::fromArray()`.
  * - No dynamic shell execution; export is pure PHP.
  * - Access restricted to logged-in backend users (see Modules.php `access` key).
+ *
+ * ## Registration
+ * The controller is tagged as `backend.controller` in Services.yaml (compatible
+ * with TYPO3 12 and 13). The #[AsController] attribute is intentionally omitted
+ * so that the class loads without errors on TYPO3 12, where that attribute class
+ * does not exist.
  */
-#[AsController]
 final class NewsExportController extends ActionController
 {
     /** Number of news rows displayed per page in the preview table. */
@@ -315,10 +319,13 @@ final class NewsExportController extends ActionController
      */
     private function buildFileName(ExportOptions $options): string
     {
+        // Use the correct extension so TYPO3's import module picks the right
+        // parser: xml → XML parser, t3d → binary parser. Mixing them causes
+        // "Undefined array key 3" in Import::getNextFilePart().
         $extension = match ($options->fileType) {
+            'xml'            => 'xml',
             't3d_compressed' => 't3d_compressed',
-            't3d'            => 't3d',
-            default          => 't3d',  // xml variant still uses .t3d extension
+            default          => 't3d',
         };
 
         return sprintf('news-export-%s.%s', date('Ymd-His'), $extension);

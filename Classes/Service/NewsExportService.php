@@ -182,7 +182,7 @@ final class NewsExportService
                     'pid',
                     $queryBuilder->createNamedParameter(
                         $pids,
-                        \Doctrine\DBAL\ArrayParameterType::INTEGER
+                        $this->arrayIntType()
                     )
                 )
             )
@@ -234,7 +234,7 @@ final class NewsExportService
                         'pid',
                         $queryBuilder->createNamedParameter(
                             $pids,
-                            \Doctrine\DBAL\ArrayParameterType::INTEGER
+                            $this->arrayIntType()
                         )
                     )
                 )
@@ -315,7 +315,7 @@ final class NewsExportService
                     ->where(
                         $qb->expr()->in(
                             'pid',
-                            $qb->createNamedParameter($options->pids, ArrayParameterType::INTEGER)
+                            $qb->createNamedParameter($options->pids, $this->arrayIntType())
                         )
                     )
                     ->executeQuery()
@@ -348,7 +348,7 @@ final class NewsExportService
                     ),
                     $qb->expr()->in(
                         'uid_foreign',
-                        $qb->createNamedParameter($newsUids, ArrayParameterType::INTEGER)
+                        $qb->createNamedParameter($newsUids, $this->arrayIntType())
                     )
                 )
                 ->executeQuery()
@@ -372,7 +372,7 @@ final class NewsExportService
                 ->where(
                     $qb->expr()->in(
                         'uid',
-                        $qb->createNamedParameter($fileUids, ArrayParameterType::INTEGER)
+                        $qb->createNamedParameter($fileUids, $this->arrayIntType())
                     )
                 )
                 ->executeQuery()
@@ -470,7 +470,10 @@ final class NewsExportService
             $options->title !== '' ? $options->title : 'News Export ' . date('Y-m-d H:i:s')
         );
         $export->setIncludeExtFileResources($options->includeFiles);
-        $export->setExcludeDisabledRecords($options->excludeDisabled);
+        // setExcludeDisabledRecords() was added in EXT:impexp v12; guard for v11.
+        if (method_exists($export, 'setExcludeDisabledRecords')) {
+            $export->setExcludeDisabledRecords($options->excludeDisabled);
+        }
 
         // ---- Record selection ---------------------------------------------------
 
@@ -500,5 +503,24 @@ final class NewsExportService
         $export->setRelOnlyTables(self::RELATED_TABLES);
 
         return $export;
+    }
+
+    /**
+     * Return the DBAL parameter type for an integer array.
+     *
+     * Doctrine DBAL 3.x (TYPO3 12/13) uses the {@see ArrayParameterType}
+     * enum introduced in DBAL 3.0. DBAL 2.x (TYPO3 11) uses the integer
+     * constant {@see \Doctrine\DBAL\Connection::PARAM_INT_ARRAY} (= 101).
+     *
+     * @return ArrayParameterType|int
+     */
+    private function arrayIntType(): mixed
+    {
+        if (class_exists(ArrayParameterType::class)) {
+            return ArrayParameterType::INTEGER;
+        }
+
+        // TYPO3 11 / Doctrine DBAL 2.x fallback.
+        return \Doctrine\DBAL\Connection::PARAM_INT_ARRAY;
     }
 }
