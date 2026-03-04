@@ -1,0 +1,50 @@
+# Ignoriere allgemeine Systemdateien
+.DS_Store
+Thumbs.db
+
+# Composer Dateien
+/vendor/
+/composer.lock
+/auth.json
+
+# ddev Dateien
+/.ddev/
+
+# NodeJS / Frontend Build Tools (falls verwendet)
+node_modules/
+build/
+dist/
+
+# TYPO3 temporäre/veröffentlichte Dateien
+/public/_assets/
+/public/typo3/
+/public/fileadmin/_temp_/
+/public/fileadmin/user_upload/
+/public/fileadmin/_processed_/
+/public/typo3temp/
+/public/.htaccess
+/public/.index.php
+var/
+config/system/settings.php
+config/system/additional.php
+
+# IDE-spezifisch (z. B. PhpStorm)
+.idea/
+*.iml
+CLAUDE.md
+
+# Logdateien
+*.log
+
+# Backup-Dateien
+*.bak
+*.tmp
+*~
+
+# Datenbank-Dateien
+*.sql
+*.csv
+
+.env
+
+# Andere Repos

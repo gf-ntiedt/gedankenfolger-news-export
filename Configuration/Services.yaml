@@ -1,0 +1,24 @@
+services:
+  _defaults:
+    # All services are wired automatically via type-hinted constructor parameters.
+    autowire: true
+    # Service tags (e.g. console.command) are applied automatically where possible.
+    autoconfigure: true
+    # Services are private by default; the container injects them where needed.
+    public: false
+
+  # Register every class under the extension namespace as a service so that
+  # constructor injection works without explicit declarations for most classes.
+  Gedankenfolger\GedankenfolgerNewsExport\:
+    resource: '../Classes/*'
+
+  # -------------------------------------------------------------------------
+  # CLI command – explicitly tagged so that the Symfony console discovers it.
+  # `schedulable: true` makes the command available in the TYPO3 Scheduler.
+  # -------------------------------------------------------------------------
+  Gedankenfolger\GedankenfolgerNewsExport\Command\ExportNewsCommand:
+    tags:
+      - name: 'console.command'
+        command: 'news:export'
+        description: 'Export georgringer/news records as a .t3d file'
+        schedulable: true

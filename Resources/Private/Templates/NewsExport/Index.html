@@ -1,0 +1,411 @@
+<html
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:be="http://typo3.org/ns/TYPO3/CMS/Backend/ViewHelpers"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+
+<f:comment>
+    Backend module template for EXT:gedankenfolger_news_export.
+
+    This template is rendered by ModuleTemplate::renderResponse() which wraps
+    the output in the standard TYPO3 backend chrome (toolbar, menu, flash
+    messages). No layout file is required.
+
+    Variables assigned by NewsExportController::indexAction():
+      {pageId}      int              - Current page-tree page UID
+      {pids}        string           - Comma-separated PIDs for the form default
+      {paginator}   ArrayPaginator   - Paginated news rows
+      {pagination}  SimplePagination - Pagination metadata
+      {currentPage} int              - Active pagination page
+      {totalCount}  int              - Total matching news records
+      {fieldMaps}   list<string>     - Available YAML mapping names
+      {csrfToken}       string           - CSRF token for the export action
+      {csrfTokenFiles}  string           - CSRF token for the downloadFiles action
+      {formData}        array            - Previously submitted form values
+</f:comment>
+
+<!-- =========================================================================
+     Module body
+     ModuleTemplate::renderResponse() already provides the full BE chrome,
+     so no <f:be.pageRenderer /> is needed here.
+     ========================================================================= -->
+<div class="module-body">
+
+    <h1>
+        <f:translate key="LLL:EXT:gedankenfolger_news_export/Resources/Private/Language/locallang.xlf:module.headline" />
+    </h1>
+
+    <!-- =====================================================================
+         Guard: georgringer/news not installed
+         ===================================================================== -->
+    <f:if condition="{newsNotInstalled}">
+        <div class="alert alert-danger" role="alert">
+            <h4 class="alert-heading">
+                <f:translate key="LLL:EXT:gedankenfolger_news_export/Resources/Private/Language/locallang.xlf:error.newsNotInstalled.title" />
+            </h4>
+            <p>
+                <f:translate key="LLL:EXT:gedankenfolger_news_export/Resources/Private/Language/locallang.xlf:error.newsNotInstalled.message" />
+            </p>
+            <hr />
+            <p class="mb-0">
+                <code>composer require georgringer/news</code>
+            </p>
+        </div>
+        <f:comment><!-- Stop rendering the rest of the module when news is not installed. --></f:comment>
+        <f:if condition="FALSE"><!-- The f:if above already stopped rendering via early return in the controller --></f:if>
+    </f:if>
+
+    <f:if condition="!{newsNotInstalled}">
+
+    <p class="text-muted">
+        <f:translate key="LLL:EXT:gedankenfolger_news_export/Resources/Private/Language/locallang.xlf:module.description" />
+    </p>
+
+    <!-- =====================================================================
+         Export configuration form
+         ===================================================================== -->
+    <f:form
+        action="export"
+        method="post"
+        enctype="application/x-www-form-urlencoded"
+    >
+        <!-- CSRF protection tokens (one per form action) -->
+        <f:form.hidden name="csrfToken" value="{csrfToken}" />
+        <f:form.hidden name="csrfTokenFiles" value="{csrfTokenFiles}" />
+
+        <!-- Pass current page ID so the export action can fall back to it. -->
+        <f:form.hidden name="pageId" value="{pageId}" />
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <f:translate key="LLL:EXT:gedankenfolger_news_export/Resources/Private/Language/locallang.xlf:form.section.source" />
+            </div>
+            <div class="card-body">
+
+                <!-- Storage PID(s) -->
+                <div class="row mb-3">
+                    <label for="ne-pids" class="col-sm-3 col-form-label">
+                        <f:translate key="LLL:EXT:gedankenfolger_news_export/Resources/Private/Language/locallang.xlf:form.pids.label" />
+                    </label>
+                    <div class="col-sm-9">
+                        <f:form.textfield
+                            id="ne-pids"
+                            name="pids"
+                            value="{pids}"
+                            class="form-control"
+                            placeholder="42, 43, 44"
+                            additionalAttributes="{pattern: '[0-9,\\s]+'}"
+                        />
+                        <div class="form-text">
+                            <f:translate key="LLL:EXT:gedankenfolger_news_export/Resources/Private/Language/locallang.xlf:form.pids.description" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Specific UIDs (optional) -->
+                <div class="row mb-3">
+                    <label for="ne-uids" class="col-sm-3 col-form-label">
+                        <f:translate key="LLL:EXT:gedankenfolger_news_export/Resources/Private/Language/locallang.xlf:form.uids.label" />
+                    </label>
+                    <div class="col-sm-9">
+                        <f:form.textfield
+                            id="ne-uids"
+                            name="uids"
+                            value="{formData.uids}"
+                            class="form-control"
+                            placeholder="101, 102, 103"
+                            additionalAttributes="{pattern: '[0-9,\\s]*'}"
+                        />
+                        <div class="form-text">
+                            <f:translate key="LLL:EXT:gedankenfolger_news_export/Resources/Private/Language/locallang.xlf:form.uids.description" />
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <f:translate key="LLL:EXT:gedankenfolger_news_export/Resources/Private/Language/locallang.xlf:form.section.options" />
+            </div>
+            <div class="card-body">
+
+                <!-- Export title -->
+                <div class="row mb-3">
+                    <label for="ne-title" class="col-sm-3 col-form-label">
+                        <f:translate key="LLL:EXT:gedankenfolger_news_export/Resources/Private/Language/locallang.xlf:form.title.label" />
+                    </label>
+                    <div class="col-sm-9">
+                        <f:form.textfield
+                            id="ne-title"
+                            name="title"
+                            value="{formData.title}"
+                            class="form-control"
+                            placeholder="News Export {f:format.date(format: 'Y-m-d')}"
+                            additionalAttributes="{maxlength: '255'}"
+                        />
+                        <div class="form-text">
+                            <f:translate key="LLL:EXT:gedankenfolger_news_export/Resources/Private/Language/locallang.xlf:form.title.description" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- File type -->
+                <div class="row mb-3">
+                    <label for="ne-fileType" class="col-sm-3 col-form-label">
+                        <f:translate key="LLL:EXT:gedankenfolger_news_export/Resources/Private/Language/locallang.xlf:form.fileType.label" />
+                    </label>
+                    <div class="col-sm-9">
+                        <f:form.select
+                            id="ne-fileType"
+                            name="fileType"
+                            value="{formData.fileType -> f:format.raw()}"
+                            class="form-select"
+                            options="{
+                                xml:            'XML (.t3d) – human-readable',
+                                t3d:            'T3D – binary',
+                                t3d_compressed: 'T3D compressed – binary + gzip'
+                            }"
+                        />
+                    </div>
+                </div>
+
+                <!-- Embed FAL files -->
+                <div class="row mb-3">
+                    <div class="col-sm-3 col-form-label">
+                        <f:translate key="LLL:EXT:gedankenfolger_news_export/Resources/Private/Language/locallang.xlf:form.includeFiles.label" />
+                    </div>
+                    <div class="col-sm-9">
+                        <div class="form-check form-switch mt-2">
+                            <f:form.checkbox
+                                id="ne-includeFiles"
+                                name="includeFiles"
+                                value="1"
+                                checked="{formData.includeFiles}"
+                                class="form-check-input"
+                            />
+                            <label class="form-check-label" for="ne-includeFiles">
+                                <f:translate key="LLL:EXT:gedankenfolger_news_export/Resources/Private/Language/locallang.xlf:form.includeFiles.description" />
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exclude disabled/hidden records -->
+                <div class="row mb-3">
+                    <div class="col-sm-3 col-form-label">
+                        <f:translate key="LLL:EXT:gedankenfolger_news_export/Resources/Private/Language/locallang.xlf:form.excludeDisabled.label" />
+                    </div>
+                    <div class="col-sm-9">
+                        <div class="form-check form-switch mt-2">
+                            <f:form.checkbox
+                                id="ne-excludeDisabled"
+                                name="excludeDisabled"
+                                value="1"
+                                checked="{formData.excludeDisabled}"
+                                class="form-check-input"
+                            />
+                            <label class="form-check-label" for="ne-excludeDisabled">
+                                <f:translate key="LLL:EXT:gedankenfolger_news_export/Resources/Private/Language/locallang.xlf:form.excludeDisabled.description" />
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Field mapping card (shown only when mapping configs exist) -->
+        <f:if condition="{fieldMaps -> f:count()} > 0">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <f:translate key="LLL:EXT:gedankenfolger_news_export/Resources/Private/Language/locallang.xlf:form.section.fieldmap" />
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <label for="ne-fieldMap" class="col-sm-3 col-form-label">
+                            <f:translate key="LLL:EXT:gedankenfolger_news_export/Resources/Private/Language/locallang.xlf:form.fieldMap.label" />
+                        </label>
+                        <div class="col-sm-9">
+                            <select id="ne-fieldMap" name="fieldMap" class="form-select">
+                                <option value="">
+                                    <f:translate key="LLL:EXT:gedankenfolger_news_export/Resources/Private/Language/locallang.xlf:form.fieldMap.none" />
+                                </option>
+                                <f:for each="{fieldMaps}" as="mapName">
+                                    <option value="{mapName}" <f:if condition="{formData.fieldMap} == {mapName}">selected="selected"</f:if>>
+                                        {mapName}
+                                    </option>
+                                </f:for>
+                            </select>
+                            <div class="form-text">
+                                <f:translate key="LLL:EXT:gedankenfolger_news_export/Resources/Private/Language/locallang.xlf:form.fieldMap.description" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </f:if>
+
+        <!-- Submit buttons -->
+        <div class="mb-5 d-flex gap-2 flex-wrap">
+            <button type="submit" class="btn btn-primary">
+                <core:icon identifier="actions-download" size="small" />
+                <f:translate key="LLL:EXT:gedankenfolger_news_export/Resources/Private/Language/locallang.xlf:form.submit" />
+            </button>
+            <f:if condition="{totalCount} > 0">
+                <button type="submit" class="btn btn-secondary" formaction="{f:uri.action(action: 'downloadFiles')}">
+                    <core:icon identifier="actions-document-export-t3d" size="small" />
+                    <f:translate key="LLL:EXT:gedankenfolger_news_export/Resources/Private/Language/locallang.xlf:form.downloadFiles" />
+                </button>
+            </f:if>
+        </div>
+
+    </f:form>
+
+    <!-- =====================================================================
+         Preview table
+         ===================================================================== -->
+    <h2>
+        <f:translate key="LLL:EXT:gedankenfolger_news_export/Resources/Private/Language/locallang.xlf:preview.headline" />
+    </h2>
+
+    <f:if condition="{pids} == ''">
+        <!-- No page selected yet -->
+        <f:then>
+            <div class="alert alert-info">
+                <f:translate key="LLL:EXT:gedankenfolger_news_export/Resources/Private/Language/locallang.xlf:preview.noPage" />
+            </div>
+        </f:then>
+        <f:else>
+            <f:if condition="{paginator.paginatedItems -> f:count()} == 0">
+                <f:then>
+                    <div class="alert alert-warning">
+                        <f:translate key="LLL:EXT:gedankenfolger_news_export/Resources/Private/Language/locallang.xlf:preview.empty" />
+                    </div>
+                </f:then>
+                <f:else>
+                    <p class="text-muted mb-3">
+                        <f:translate
+                            key="LLL:EXT:gedankenfolger_news_export/Resources/Private/Language/locallang.xlf:preview.count"
+                            arguments="{0: totalCount, 1: pids}"
+                        />
+                    </p>
+
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover table-sm">
+                            <thead>
+                                <tr>
+                                    <th><f:translate key="LLL:EXT:gedankenfolger_news_export/Resources/Private/Language/locallang.xlf:preview.col.uid" /></th>
+                                    <th><f:translate key="LLL:EXT:gedankenfolger_news_export/Resources/Private/Language/locallang.xlf:preview.col.title" /></th>
+                                    <th><f:translate key="LLL:EXT:gedankenfolger_news_export/Resources/Private/Language/locallang.xlf:preview.col.date" /></th>
+                                    <th><f:translate key="LLL:EXT:gedankenfolger_news_export/Resources/Private/Language/locallang.xlf:preview.col.type" /></th>
+                                    <th class="text-center"><f:translate key="LLL:EXT:gedankenfolger_news_export/Resources/Private/Language/locallang.xlf:preview.col.categories" /></th>
+                                    <th class="text-center"><f:translate key="LLL:EXT:gedankenfolger_news_export/Resources/Private/Language/locallang.xlf:preview.col.tags" /></th>
+                                    <th class="text-center"><f:translate key="LLL:EXT:gedankenfolger_news_export/Resources/Private/Language/locallang.xlf:preview.col.media" /></th>
+                                    <th><f:translate key="LLL:EXT:gedankenfolger_news_export/Resources/Private/Language/locallang.xlf:preview.col.status" /></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <f:for each="{paginator.paginatedItems}" as="row">
+                                    <tr>
+                                        <td class="text-muted">{row.uid}</td>
+                                        <td>
+                                            <f:if condition="{row.hidden}">
+                                                <f:then>
+                                                    <span class="text-muted"><em>{row.title}</em></span>
+                                                </f:then>
+                                                <f:else>
+                                                    {row.title}
+                                                </f:else>
+                                            </f:if>
+                                        </td>
+                                        <td class="text-nowrap">
+                                            <f:if condition="{row.datetime}">
+                                                <f:format.date format="Y-m-d">{row.datetime}</f:format.date>
+                                            </f:if>
+                                        </td>
+                                        <td>
+                                            <f:switch expression="{row.type}">
+                                                <f:case value="0"><span class="badge bg-secondary"><f:translate key="LLL:EXT:gedankenfolger_news_export/Resources/Private/Language/locallang.xlf:preview.type.0" /></span></f:case>
+                                                <f:case value="1"><span class="badge bg-info"><f:translate key="LLL:EXT:gedankenfolger_news_export/Resources/Private/Language/locallang.xlf:preview.type.1" /></span></f:case>
+                                                <f:case value="2"><span class="badge bg-warning text-dark"><f:translate key="LLL:EXT:gedankenfolger_news_export/Resources/Private/Language/locallang.xlf:preview.type.2" /></span></f:case>
+                                                <f:defaultCase>{row.type}</f:defaultCase>
+                                            </f:switch>
+                                        </td>
+                                        <td class="text-center">{row.categories}</td>
+                                        <td class="text-center">{row.tags}</td>
+                                        <td class="text-center">{row.fal_media}</td>
+                                        <td>
+                                            <f:if condition="{row.hidden}">
+                                                <f:then>
+                                                    <span class="badge bg-warning text-dark">
+                                                        <f:translate key="LLL:EXT:gedankenfolger_news_export/Resources/Private/Language/locallang.xlf:preview.status.hidden" />
+                                                    </span>
+                                                </f:then>
+                                                <f:else>
+                                                    <span class="badge bg-success">
+                                                        <f:translate key="LLL:EXT:gedankenfolger_news_export/Resources/Private/Language/locallang.xlf:preview.status.visible" />
+                                                    </span>
+                                                </f:else>
+                                            </f:if>
+                                        </td>
+                                    </tr>
+                                </f:for>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <f:if condition="{pagination.lastPageNumber} > 1">
+                        <nav aria-label="News record pagination">
+                            <ul class="pagination justify-content-center">
+
+                                <!-- Previous page -->
+                                <f:if condition="{pagination.previousPageNumber}">
+                                    <li class="page-item">
+                                        <f:link.action
+                                            action="index"
+                                            arguments="{currentPage: pagination.previousPageNumber, 'tx_gedankenfolger_news_export_gedankenfolger_news_export[pids]': pids}"
+                                            class="page-link"
+                                        >&lsaquo;</f:link.action>
+                                    </li>
+                                </f:if>
+
+                                <!-- Page numbers -->
+                                <f:for each="{pagination.allPageNumbers}" as="pageNumber">
+                                    <li class="page-item{f:if(condition: '{pageNumber} == {currentPage}', then: ' active')}">
+                                        <f:link.action
+                                            action="index"
+                                            arguments="{currentPage: pageNumber, 'tx_gedankenfolger_news_export_gedankenfolger_news_export[pids]': pids}"
+                                            class="page-link"
+                                        >{pageNumber}</f:link.action>
+                                    </li>
+                                </f:for>
+
+                                <!-- Next page -->
+                                <f:if condition="{pagination.nextPageNumber}">
+                                    <li class="page-item">
+                                        <f:link.action
+                                            action="index"
+                                            arguments="{currentPage: pagination.nextPageNumber, 'tx_gedankenfolger_news_export_gedankenfolger_news_export[pids]': pids}"
+                                            class="page-link"
+                                        >&rsaquo;</f:link.action>
+                                    </li>
+                                </f:if>
+
+                            </ul>
+                        </nav>
+                    </f:if>
+
+                </f:else>
+            </f:if>
+        </f:else>
+    </f:if>
+
+    </f:if><!-- end: f:if condition="!{newsNotInstalled}" -->
+
+</div><!-- .module-body -->
+
+</html>

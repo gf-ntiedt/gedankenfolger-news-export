@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="en" target-language="de" datatype="plaintext" original="EXT:gedankenfolger_news_export/Resources/Private/Language/locallang.xlf">
+        <body>
+
+            <!-- Prerequisite errors -->
+            <trans-unit id="error.newsNotInstalled.title">
+                <source>georgringer/news is not installed</source>
+                <target>georgringer/news ist nicht installiert</target>
+            </trans-unit>
+            <trans-unit id="error.newsNotInstalled.message">
+                <source>The table "tx_news_domain_model_news" does not exist. Please install the georgringer/news extension before using this module. Run the following command in your project root:</source>
+                <target>Die Tabelle „tx_news_domain_model_news" existiert nicht. Bitte installieren Sie die georgringer/news-Extension, bevor Sie dieses Modul verwenden. Führen Sie folgenden Befehl im Projektverzeichnis aus:</target>
+            </trans-unit>
+
+            <!-- Module meta -->
+            <trans-unit id="mlang_tabs_tab">
+                <source>News Export</source>
+                <target>News-Export</target>
+            </trans-unit>
+            <trans-unit id="mlang_labels_tabdescr">
+                <source>Export georgringer/news records as .t3d files</source>
+                <target>Exportiert georgringer/news-Datensätze als .t3d-Dateien</target>
+            </trans-unit>
+            <trans-unit id="mlang_labels_tablabel">
+                <source>News Export</source>
+                <target>News-Export</target>
+            </trans-unit>
+
+            <!-- Page headings -->
+            <trans-unit id="module.headline">
+                <source>News Export</source>
+                <target>News-Export</target>
+            </trans-unit>
+            <trans-unit id="module.description">
+                <source>Select a storage page in the page tree, configure the export options below, and download a .t3d file that can be imported via the TYPO3 Import / Export module.</source>
+                <target>Wählen Sie im Seitenbaum eine Speicherseite aus, konfigurieren Sie die Exportoptionen und laden Sie eine .t3d-Datei herunter, die über das TYPO3-Import-/Export-Modul importiert werden kann.</target>
+            </trans-unit>
+
+            <!-- Form: section headings -->
+            <trans-unit id="form.section.source">
+                <source>Record selection</source>
+                <target>Datensatzauswahl</target>
+            </trans-unit>
+            <trans-unit id="form.section.options">
+                <source>Export options</source>
+                <target>Exportoptionen</target>
+            </trans-unit>
+            <trans-unit id="form.section.fieldmap">
+                <source>Field mapping (cross-version)</source>
+                <target>Feldzuordnung (versionsübergreifend)</target>
+            </trans-unit>
+
+            <!-- Form: labels -->
+            <trans-unit id="form.pids.label">
+                <source>Storage PID(s)</source>
+                <target>Speicher-PID(s)</target>
+            </trans-unit>
+            <trans-unit id="form.pids.description">
+                <source>Comma-separated list of storage page UIDs. Defaults to the page currently selected in the page tree.</source>
+                <target>Kommagetrennte Liste von Speicherseiten-UIDs. Standard ist die aktuell im Seitenbaum ausgewählte Seite.</target>
+            </trans-unit>
+            <trans-unit id="form.uids.label">
+                <source>Specific news UIDs (optional)</source>
+                <target>Bestimmte News-UIDs (optional)</target>
+            </trans-unit>
+            <trans-unit id="form.uids.description">
+                <source>Comma-separated list of individual news UIDs. When set, only those records are exported (the PID filter is still applied).</source>
+                <target>Kommagetrennte Liste einzelner News-UIDs. Wenn gesetzt, werden nur diese Datensätze exportiert (der PID-Filter wird weiterhin angewendet).</target>
+            </trans-unit>
+            <trans-unit id="form.fileType.label">
+                <source>File type</source>
+                <target>Dateityp</target>
+            </trans-unit>
+            <trans-unit id="form.fileType.xml">
+                <source>XML (.t3d) – human-readable</source>
+                <target>XML (.t3d) – lesbar</target>
+            </trans-unit>
+            <trans-unit id="form.fileType.t3d">
+                <source>T3D – binary</source>
+                <target>T3D – binär</target>
+            </trans-unit>
+            <trans-unit id="form.fileType.t3d_compressed">
+                <source>T3D compressed – binary + gzip</source>
+                <target>T3D komprimiert – binär + gzip</target>
+            </trans-unit>
+            <trans-unit id="form.title.label">
+                <source>Export title</source>
+                <target>Export-Titel</target>
+            </trans-unit>
+            <trans-unit id="form.title.description">
+                <source>Optional human-readable title stored in the .t3d metadata header.</source>
+                <target>Optionaler lesbarer Titel, der im .t3d-Metadaten-Header gespeichert wird.</target>
+            </trans-unit>
+            <trans-unit id="form.includeFiles.label">
+                <source>Embed FAL files</source>
+                <target>FAL-Dateien einbetten</target>
+            </trans-unit>
+            <trans-unit id="form.includeFiles.description">
+                <source>When enabled, the binary content of all referenced files (images, attachments) is base64-encoded and embedded directly inside the .t3d archive. This produces a fully self-contained archive but significantly increases file size.</source>
+                <target>Wenn aktiviert, wird der binäre Inhalt aller referenzierten Dateien (Bilder, Anhänge) base64-kodiert und direkt im .t3d-Archiv eingebettet. Dies ergibt ein vollständig eigenständiges Archiv, erhöht aber die Dateigröße erheblich.</target>
+            </trans-unit>
+            <trans-unit id="form.fieldMap.label">
+                <source>Field mapping</source>
+                <target>Feldzuordnung</target>
+            </trans-unit>
+            <trans-unit id="form.fieldMap.none">
+                <source>— none —</source>
+                <target>— keine —</target>
+            </trans-unit>
+            <trans-unit id="form.fieldMap.description">
+                <source>Apply a YAML field-mapping configuration to transform field names or values in the exported XML. Use "news-v10-to-v13" when migrating from georgringer/news 10.x.</source>
+                <target>Wenden Sie eine YAML-Feldzuordnungs-Konfiguration an, um Feldnamen oder -werte im exportierten XML zu transformieren. Verwenden Sie „news-v10-to-v13" bei der Migration von georgringer/news 10.x.</target>
+            </trans-unit>
+            <trans-unit id="form.excludeDisabled.label">
+                <source>Visible records only</source>
+                <target>Nur sichtbare Datensätze</target>
+            </trans-unit>
+            <trans-unit id="form.excludeDisabled.description">
+                <source>When enabled, hidden/disabled records (hidden=1) are excluded from both the preview and the export. Soft-deleted records (deleted=1) are always excluded regardless of this setting.</source>
+                <target>Wenn aktiviert, werden ausgeblendete/deaktivierte Datensätze (hidden=1) sowohl aus der Vorschau als auch aus dem Export ausgeschlossen. Soft-gelöschte Datensätze (deleted=1) werden unabhängig von dieser Einstellung immer ausgeschlossen.</target>
+            </trans-unit>
+            <trans-unit id="form.submit">
+                <source>Download .t3d export</source>
+                <target>.t3d-Export herunterladen</target>
+            </trans-unit>
+            <trans-unit id="form.downloadFiles">
+                <source>Download referenced files (.zip)</source>
+                <target>Referenzierte Dateien herunterladen (.zip)</target>
+            </trans-unit>
+
+            <!-- Preview table -->
+            <trans-unit id="preview.headline">
+                <source>Records to be exported</source>
+                <target>Zu exportierende Datensätze</target>
+            </trans-unit>
+            <trans-unit id="preview.noPage">
+                <source>Please select a storage page in the page tree or enter a PID manually.</source>
+                <target>Bitte wählen Sie eine Speicherseite im Seitenbaum aus oder geben Sie eine PID manuell ein.</target>
+            </trans-unit>
+            <trans-unit id="preview.empty">
+                <source>No news records found on the selected page(s).</source>
+                <target>Keine News-Datensätze auf den ausgewählten Seiten gefunden.</target>
+            </trans-unit>
+            <trans-unit id="preview.count">
+                <source>%1$d record(s) found on PID(s) %2$s</source>
+                <target>%1$d Datensatz/Datensätze auf PID(s) %2$s gefunden</target>
+            </trans-unit>
+            <trans-unit id="preview.col.uid"><source>UID</source><target>UID</target></trans-unit>
+            <trans-unit id="preview.col.title"><source>Title</source><target>Titel</target></trans-unit>
+            <trans-unit id="preview.col.date"><source>Date</source><target>Datum</target></trans-unit>
+            <trans-unit id="preview.col.type"><source>Type</source><target>Typ</target></trans-unit>
+            <trans-unit id="preview.col.categories"><source>Categories</source><target>Kategorien</target></trans-unit>
+            <trans-unit id="preview.col.tags"><source>Tags</source><target>Tags</target></trans-unit>
+            <trans-unit id="preview.col.media"><source>Media</source><target>Medien</target></trans-unit>
+            <trans-unit id="preview.col.status"><source>Status</source><target>Status</target></trans-unit>
+            <trans-unit id="preview.status.hidden"><source>Hidden</source><target>Versteckt</target></trans-unit>
+            <trans-unit id="preview.status.visible"><source>Visible</source><target>Sichtbar</target></trans-unit>
+            <trans-unit id="preview.type.0"><source>Normal</source><target>Normal</target></trans-unit>
+            <trans-unit id="preview.type.1"><source>Internal page</source><target>Interne Seite</target></trans-unit>
+            <trans-unit id="preview.type.2"><source>External URL</source><target>Externe URL</target></trans-unit>
+
+            <!-- Flash messages -->
+            <trans-unit id="flash.noRecords.title"><source>No records selected</source><target>Keine Datensätze ausgewählt</target></trans-unit>
+            <trans-unit id="flash.noRecords.message">
+                <source>Please provide at least one storage PID or a specific news UID before exporting.</source>
+                <target>Bitte geben Sie mindestens eine Speicher-PID oder eine bestimmte News-UID an, bevor Sie exportieren.</target>
+            </trans-unit>
+            <trans-unit id="flash.exportError.title"><source>Export error</source><target>Exportfehler</target></trans-unit>
+            <trans-unit id="flash.csrfError.title"><source>Security error</source><target>Sicherheitsfehler</target></trans-unit>
+            <trans-unit id="flash.csrfError.message">
+                <source>The form protection token was invalid. Please reload the page and try again.</source>
+                <target>Das Formularschutz-Token war ungültig. Bitte laden Sie die Seite neu und versuchen Sie es erneut.</target>
+            </trans-unit>
+
+        </body>
+    </file>
+</xliff>
