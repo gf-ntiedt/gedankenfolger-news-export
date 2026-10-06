@@ -26,13 +26,13 @@ final class ExportOptions
      *                                            regardless of this flag.
      */
     public function __construct(
-        public readonly array  $pids            = [],
-        public readonly array  $uids            = [],
+        public readonly array $pids            = [],
+        public readonly array $uids            = [],
         public readonly string $fileType        = 'xml',
         public readonly string $fieldMap        = '',
-        public readonly bool   $includeFiles    = false,
+        public readonly bool $includeFiles    = false,
         public readonly string $title           = '',
-        public readonly bool   $excludeDisabled = false,
+        public readonly bool $excludeDisabled = false,
     ) {}
 
     /**

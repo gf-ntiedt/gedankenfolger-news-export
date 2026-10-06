@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace Gedankenfolger\GedankenfolgerNewsExport\FieldMapper;
 
-use DOMDocument;
-use DOMElement;
-use DOMXPath;
 use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Yaml;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
@@ -89,7 +86,7 @@ final class NewsFieldMapper
             return $xmlContent;
         }
 
-        $xpath = new DOMXPath($dom);
+        $xpath = new \DOMXPath($dom);
 
         foreach ($config['tables'] as $tableName => $tableConfig) {
             if (!is_array($tableConfig) || !isset($tableConfig['fields']) || !is_array($tableConfig['fields'])) {
@@ -117,12 +114,12 @@ final class NewsFieldMapper
      * The XPath pattern targets the `data` child of every record element:
      * `//records/{tableName}/{recordNode}/data/{fieldName}`
      *
-     * @param DOMXPath                             $xpath      Evaluator bound to the document.
-     * @param DOMDocument                          $dom        Owner document (needed for element renaming).
+     * @param \DOMXPath                             $xpath      Evaluator bound to the document.
+     * @param \DOMDocument                          $dom        Owner document (needed for element renaming).
      * @param string                               $tableName  Database table name.
-     * @param array<string, array<string, mixed>>  $fieldRules Rules keyed by source field name.
+     * @param array<string, mixed>                 $fieldRules Rules keyed by source field name (values come from YAML, so each is checked for being an array).
      */
-    private function applyTableRules(DOMXPath $xpath, DOMDocument $dom, string $tableName, array $fieldRules): void
+    private function applyTableRules(\DOMXPath $xpath, \DOMDocument $dom, string $tableName, array $fieldRules): void
     {
         foreach ($fieldRules as $fieldName => $rule) {
             if (!is_array($rule) || !isset($rule['transform'])) {
@@ -141,10 +138,10 @@ final class NewsFieldMapper
             }
 
             // Collect into an array first to avoid live-NodeList issues when renaming.
-            /** @var list<DOMElement> $elements */
+            /** @var list<\DOMElement> $elements */
             $elements = [];
             foreach ($nodes as $node) {
-                if ($node instanceof DOMElement) {
+                if ($node instanceof \DOMElement) {
                     $elements[] = $node;
                 }
             }
@@ -172,11 +169,11 @@ final class NewsFieldMapper
      * **regex_replace** – Run a PCRE substitution on the text content.
      *   Required keys: `pattern` (string), `replacement` (string).
      *
-     * @param DOMDocument                $dom     Owner document.
-     * @param DOMElement                 $element Target element to transform.
+     * @param \DOMDocument                $dom     Owner document.
+     * @param \DOMElement                 $element Target element to transform.
      * @param array<string, string|int>  $rule    Rule from the YAML configuration.
      */
-    private function applyRule(DOMDocument $dom, DOMElement $element, array $rule): void
+    private function applyRule(\DOMDocument $dom, \DOMElement $element, array $rule): void
     {
         switch ((string)$rule['transform']) {
             case 'rename':
@@ -288,9 +285,9 @@ final class NewsFieldMapper
      *
      * @param string $xmlContent Raw XML string.
      */
-    private function parseXml(string $xmlContent): ?DOMDocument
+    private function parseXml(string $xmlContent): ?\DOMDocument
     {
-        $dom                     = new DOMDocument('1.0', 'utf-8');
+        $dom                     = new \DOMDocument('1.0', 'utf-8');
         $dom->preserveWhiteSpace = true;
         $dom->formatOutput       = false;
 

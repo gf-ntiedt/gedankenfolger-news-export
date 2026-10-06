@@ -30,25 +30,13 @@ use TYPO3\CMS\Impexp\Export;
  * download (backend module) or as a file written to a user-specified path (CLI).
  *
  * ## Tables included in every export
- * The constants {@see self::EXPORT_TABLES} and {@see self::RELATED_TABLES} define
- * which records EXT:impexp fetches. `RELATED_TABLES` are included only when they
+ * The news records themselves (`tx_news_domain_model_news`) are exported either per
+ * storage PID or per UID. The constant {@see self::RELATED_TABLES} defines which
+ * related records EXT:impexp fetches in addition. They are included only when they
  * are referenced by a news record; they are never exported "in bulk".
  */
 final class NewsExportService
 {
-    /**
-     * Primary tables to export when a storage PID is given.
-     *
-     * EXT:impexp fetches ALL records of these tables that reside on the
-     * requested PID(s). For `setRecord()` calls (individual UIDs) only
-     * `tx_news_domain_model_news` is targeted directly.
-     *
-     * @var list<string>
-     */
-    private const EXPORT_TABLES = [
-        'tx_news_domain_model_news',
-    ];
-
     /**
      * Tables that are pulled in automatically because of FK / MM relations.
      *
@@ -76,7 +64,7 @@ final class NewsExportService
 
     public function __construct(
         private readonly NewsFieldMapper $fieldMapper,
-        private readonly ConnectionPool  $connectionPool,
+        private readonly ConnectionPool $connectionPool,
     ) {}
 
     // -------------------------------------------------------------------------
@@ -471,6 +459,7 @@ final class NewsExportService
         );
         $export->setIncludeExtFileResources($options->includeFiles);
         // setExcludeDisabledRecords() was added in EXT:impexp v12; guard for v11.
+        // @phpstan-ignore function.alreadyNarrowedType (always true on TYPO3 12/13, needed for TYPO3 11)
         if (method_exists($export, 'setExcludeDisabledRecords')) {
             $export->setExcludeDisabledRecords($options->excludeDisabled);
         }
@@ -521,6 +510,7 @@ final class NewsExportService
         }
 
         // TYPO3 11 / Doctrine DBAL 2.x fallback.
+        // @phpstan-ignore classConstant.notFound (constant only exists in DBAL 2.x, i.e. TYPO3 11)
         return \Doctrine\DBAL\Connection::PARAM_INT_ARRAY;
     }
 }

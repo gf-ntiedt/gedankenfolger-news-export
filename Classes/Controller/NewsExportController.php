@@ -13,7 +13,6 @@ use TYPO3\CMS\Core\Pagination\ArrayPaginator;
 use TYPO3\CMS\Core\Pagination\SimplePagination;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
-use ZipArchive;
 
 /**
  * Backend module controller for EXT:gedankenfolger_news_export.
@@ -51,7 +50,7 @@ final class NewsExportController extends ActionController
 
     public function __construct(
         private readonly ModuleTemplateFactory $moduleTemplateFactory,
-        private readonly NewsExportService     $exportService,
+        private readonly NewsExportService $exportService,
     ) {}
 
     // -------------------------------------------------------------------------
@@ -250,8 +249,8 @@ final class NewsExportController extends ActionController
         // ---- Build ZIP in a temp file ----------------------------------------
         $tmpFile = tempnam(sys_get_temp_dir(), 'news_files_');
 
-        $zip = new ZipArchive();
-        if ($zip->open($tmpFile, ZipArchive::OVERWRITE) !== true) {
+        $zip = new \ZipArchive();
+        if ($zip->open($tmpFile, \ZipArchive::OVERWRITE) !== true) {
             $this->addFlashMessage(
                 'Could not create ZIP archive.',
                 'ZIP error',
