@@ -131,6 +131,9 @@
             <trans-unit id="preview.count">
                 <source>%1$d record(s) found on PID(s) %2$s</source>
             </trans-unit>
+            <trans-unit id="preview.pagination.label">
+                <source>News record pagination</source>
+            </trans-unit>
             <trans-unit id="preview.col.uid">
                 <source>UID</source>
             </trans-unit>

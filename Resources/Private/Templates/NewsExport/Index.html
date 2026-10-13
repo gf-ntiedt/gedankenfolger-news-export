@@ -297,14 +297,14 @@
                         <table class="table table-striped table-hover table-sm">
                             <thead>
                                 <tr>
-                                    <th><f:translate key="LLL:EXT:gedankenfolger_news_export/Resources/Private/Language/locallang.xlf:preview.col.uid" /></th>
-                                    <th><f:translate key="LLL:EXT:gedankenfolger_news_export/Resources/Private/Language/locallang.xlf:preview.col.title" /></th>
-                                    <th><f:translate key="LLL:EXT:gedankenfolger_news_export/Resources/Private/Language/locallang.xlf:preview.col.date" /></th>
-                                    <th><f:translate key="LLL:EXT:gedankenfolger_news_export/Resources/Private/Language/locallang.xlf:preview.col.type" /></th>
-                                    <th class="text-center"><f:translate key="LLL:EXT:gedankenfolger_news_export/Resources/Private/Language/locallang.xlf:preview.col.categories" /></th>
-                                    <th class="text-center"><f:translate key="LLL:EXT:gedankenfolger_news_export/Resources/Private/Language/locallang.xlf:preview.col.tags" /></th>
-                                    <th class="text-center"><f:translate key="LLL:EXT:gedankenfolger_news_export/Resources/Private/Language/locallang.xlf:preview.col.media" /></th>
-                                    <th><f:translate key="LLL:EXT:gedankenfolger_news_export/Resources/Private/Language/locallang.xlf:preview.col.status" /></th>
+                                    <th scope="col"><f:translate key="LLL:EXT:gedankenfolger_news_export/Resources/Private/Language/locallang.xlf:preview.col.uid" /></th>
+                                    <th scope="col"><f:translate key="LLL:EXT:gedankenfolger_news_export/Resources/Private/Language/locallang.xlf:preview.col.title" /></th>
+                                    <th scope="col"><f:translate key="LLL:EXT:gedankenfolger_news_export/Resources/Private/Language/locallang.xlf:preview.col.date" /></th>
+                                    <th scope="col"><f:translate key="LLL:EXT:gedankenfolger_news_export/Resources/Private/Language/locallang.xlf:preview.col.type" /></th>
+                                    <th scope="col" class="text-center"><f:translate key="LLL:EXT:gedankenfolger_news_export/Resources/Private/Language/locallang.xlf:preview.col.categories" /></th>
+                                    <th scope="col" class="text-center"><f:translate key="LLL:EXT:gedankenfolger_news_export/Resources/Private/Language/locallang.xlf:preview.col.tags" /></th>
+                                    <th scope="col" class="text-center"><f:translate key="LLL:EXT:gedankenfolger_news_export/Resources/Private/Language/locallang.xlf:preview.col.media" /></th>
+                                    <th scope="col"><f:translate key="LLL:EXT:gedankenfolger_news_export/Resources/Private/Language/locallang.xlf:preview.col.status" /></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -359,7 +359,7 @@
 
                     <!-- Pagination -->
                     <f:if condition="{pagination.lastPageNumber} > 1">
-                        <nav aria-label="News record pagination">
+                        <nav aria-label="{f:translate(key: 'LLL:EXT:gedankenfolger_news_export/Resources/Private/Language/locallang.xlf:preview.pagination.label')}">
                             <ul class="pagination justify-content-center">
 
                                 <!-- Previous page -->

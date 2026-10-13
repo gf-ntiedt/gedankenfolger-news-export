@@ -146,6 +146,10 @@
                 <source>%1$d record(s) found on PID(s) %2$s</source>
                 <target>%1$d Datensatz/Datensätze auf PID(s) %2$s gefunden</target>
             </trans-unit>
+            <trans-unit id="preview.pagination.label">
+                <source>News record pagination</source>
+                <target>Seitennavigation der News-Datensätze</target>
+            </trans-unit>
             <trans-unit id="preview.col.uid"><source>UID</source><target>UID</target></trans-unit>
             <trans-unit id="preview.col.title"><source>Title</source><target>Titel</target></trans-unit>
             <trans-unit id="preview.col.date"><source>Date</source><target>Datum</target></trans-unit>
