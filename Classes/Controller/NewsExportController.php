@@ -266,8 +266,18 @@ final class NewsExportController extends ActionController
         // ---- Build ZIP in a temp file ----------------------------------------
         $tmpFile = tempnam(sys_get_temp_dir(), 'news_files_');
 
+        if ($tmpFile === false) {
+            $this->addFlashMessage(
+                'Could not create a temporary file for the ZIP archive.',
+                'ZIP error',
+                \TYPO3\CMS\Core\Type\ContextualFeedbackSeverity::ERROR
+            );
+            return $this->redirect('index');
+        }
+
         $zip = new \ZipArchive();
         if ($zip->open($tmpFile, \ZipArchive::OVERWRITE) !== true) {
+            @unlink($tmpFile);
             $this->addFlashMessage(
                 'Could not create ZIP archive.',
                 'ZIP error',
@@ -277,12 +287,39 @@ final class NewsExportController extends ActionController
         }
 
         foreach ($files as $entry) {
-            $zip->addFile($entry['absolute'], $entry['zipPath']);
+            if (!$zip->addFile($entry['absolute'], $entry['zipPath'])) {
+                $zip->close();
+                @unlink($tmpFile);
+                $this->addFlashMessage(
+                    sprintf('Could not add the file "%s" to the ZIP archive.', $entry['zipPath']),
+                    'ZIP error',
+                    \TYPO3\CMS\Core\Type\ContextualFeedbackSeverity::ERROR
+                );
+                return $this->redirect('index');
+            }
         }
-        $zip->close();
 
-        $zipContent = (string)file_get_contents($tmpFile);
+        if (!$zip->close()) {
+            @unlink($tmpFile);
+            $this->addFlashMessage(
+                'Could not write the ZIP archive.',
+                'ZIP error',
+                \TYPO3\CMS\Core\Type\ContextualFeedbackSeverity::ERROR
+            );
+            return $this->redirect('index');
+        }
+
+        $zipContent = file_get_contents($tmpFile);
         @unlink($tmpFile);
+
+        if ($zipContent === false) {
+            $this->addFlashMessage(
+                'Could not read the ZIP archive.',
+                'ZIP error',
+                \TYPO3\CMS\Core\Type\ContextualFeedbackSeverity::ERROR
+            );
+            return $this->redirect('index');
+        }
 
         // ---- Stream response -------------------------------------------------
         $fileName = sprintf('news-files-%s.zip', date('Ymd-His'));
