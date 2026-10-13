@@ -11,6 +11,9 @@ namespace Gedankenfolger\GedankenfolgerNewsExport\Service;
  * POST data or CLI option arrays. All validation and sanitisation happens in
  * that factory method so that the rest of the codebase can rely on the
  * properties being safe and well-typed.
+ *
+ * @author  Niels Tiedt <niels.tiedt@gedankenfolger.de>
+ * @company Gedankenfolger GmbH
  */
 final class ExportOptions
 {

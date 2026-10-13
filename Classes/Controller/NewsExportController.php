@@ -42,6 +42,9 @@ use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
  * with TYPO3 12 and 13). The #[AsController] attribute is intentionally omitted
  * so that the class loads without errors on TYPO3 12, where that attribute class
  * does not exist.
+ *
+ * @author  Niels Tiedt <niels.tiedt@gedankenfolger.de>
+ * @company Gedankenfolger GmbH
  */
 final class NewsExportController extends ActionController
 {

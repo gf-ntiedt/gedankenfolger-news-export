@@ -48,6 +48,9 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  * `EXT:gedankenfolger_news_export/Configuration/FieldMappings/<name>.yaml`
  *
  * @see \Gedankenfolger\GedankenfolgerNewsExport\Service\ExportOptions::$fieldMap
+ *
+ * @author  Niels Tiedt <niels.tiedt@gedankenfolger.de>
+ * @company Gedankenfolger GmbH
  */
 final class NewsFieldMapper
 {

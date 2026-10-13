@@ -34,6 +34,9 @@ use TYPO3\CMS\Impexp\Export;
  * storage PID or per UID. The constant {@see self::RELATED_TABLES} defines which
  * related records EXT:impexp fetches in addition. They are included only when they
  * are referenced by a news record; they are never exported "in bulk".
+ *
+ * @author  Niels Tiedt <niels.tiedt@gedankenfolger.de>
+ * @company Gedankenfolger GmbH
  */
 final class NewsExportService
 {

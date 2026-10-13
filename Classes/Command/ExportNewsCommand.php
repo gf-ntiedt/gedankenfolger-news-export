@@ -46,6 +46,9 @@ use TYPO3\CMS\Core\Core\Bootstrap;
  * ## Scheduler support
  * The command is tagged with `schedulable: true` in Services.yaml and can
  * therefore be configured as a recurring TYPO3 Scheduler task.
+ *
+ * @author  Niels Tiedt <niels.tiedt@gedankenfolger.de>
+ * @company Gedankenfolger GmbH
  */
 #[AsCommand(
     name: 'news:export',
