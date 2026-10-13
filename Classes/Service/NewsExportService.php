@@ -112,7 +112,8 @@ final class NewsExportService
      *
      * @param ExportOptions $options Validated export parameters.
      * @return string Raw t3d XML content.
-     * @throws \RuntimeException When the export pipeline fails to produce output.
+     * @throws \InvalidArgumentException When the file type is not supported by EXT:impexp, e.g. `t3d_compressed`
+     *                                   on a PHP build without zlib (`gzcompress()`).
      */
     public function exportToString(ExportOptions $options): string
     {
