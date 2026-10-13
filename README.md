@@ -175,7 +175,7 @@
     <li><strong>--output=&lt;path&gt;</strong> (<code>-o</code>): Output file path. Defaults to <code>news-export-&lt;timestamp&gt;.t3d</code> in the current working directory.</li>
     <li><strong>--type=&lt;format&gt;</strong> (<code>-t</code>): <code>xml</code> (default), <code>t3d</code>, or <code>t3d_compressed</code>.</li>
     <li><strong>--title=&lt;string&gt;</strong>: Title stored in the <code>.t3d</code> metadata header.</li>
-    <li><strong>--field-map=&lt;name&gt;</strong>: YAML mapping config name (file stem without <code>.yaml</code> extension).</li>
+    <li><strong>--field-map=&lt;name&gt;</strong>: YAML mapping config name (file stem without <code>.yaml</code> extension). The command aborts with an error when no such file exists in <code>Configuration/FieldMappings/</code>.</li>
     <li><strong>--include-files</strong>: Embed FAL file binaries (base64-encoded) inside the archive.</li>
     <li><strong>--exclude-disabled</strong>: Exclude hidden/disabled records (<code>hidden=1</code>) from the export.</li>
 </ul>
