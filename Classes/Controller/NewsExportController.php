@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Gedankenfolger\GedankenfolgerNewsExport\Controller;
 
+use Gedankenfolger\GedankenfolgerNewsExport\Pagination\NewsPreviewPaginator;
 use Gedankenfolger\GedankenfolgerNewsExport\Service\ExportOptions;
 use Gedankenfolger\GedankenfolgerNewsExport\Service\NewsExportService;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 use TYPO3\CMS\Core\FormProtection\FormProtectionFactory;
-use TYPO3\CMS\Core\Pagination\ArrayPaginator;
 use TYPO3\CMS\Core\Pagination\SimplePagination;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
@@ -92,8 +92,13 @@ final class NewsExportController extends ActionController
 
         // Load records for the preview table (paginated).
         $excludeDisabled = (bool)($formData['excludeDisabled'] ?? false);
-        $allRecords  = $this->exportService->fetchNewsPreview($pids, $excludeDisabled);
-        $paginator   = new ArrayPaginator($allRecords, max(1, $currentPage), self::ITEMS_PER_PAGE);
+        $totalCount  = $this->exportService->countNews($pids, $excludeDisabled);
+        $paginator   = new NewsPreviewPaginator(
+            $totalCount,
+            fn(int $limit, int $offset): array => $this->exportService->fetchNewsPreview($pids, $excludeDisabled, $limit, $offset),
+            max(1, $currentPage),
+            self::ITEMS_PER_PAGE,
+        );
         $pagination  = new SimplePagination($paginator);
 
         // Generate fresh CSRF tokens – one per form action.
@@ -109,7 +114,7 @@ final class NewsExportController extends ActionController
             'paginator'       => $paginator,
             'pagination'      => $pagination,
             'currentPage'     => $currentPage,
-            'totalCount'      => count($allRecords),
+            'totalCount'      => $totalCount,
             'fieldMaps'       => $this->exportService->availableFieldMaps(),
             'csrfToken'       => $csrfToken,
             'csrfTokenFiles'  => $csrfTokenFiles,

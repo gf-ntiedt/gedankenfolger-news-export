@@ -15,7 +15,7 @@
     Variables assigned by NewsExportController::indexAction():
       {pageId}      int              - Current page-tree page UID
       {pids}        string           - Comma-separated PIDs for the form default
-      {paginator}   ArrayPaginator   - Paginated news rows
+      {paginator}   NewsPreviewPaginator - Paginated news rows (only the current page is loaded)
       {pagination}  SimplePagination - Pagination metadata
       {currentPage} int              - Active pagination page
       {totalCount}  int              - Total matching news records

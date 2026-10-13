@@ -206,13 +206,15 @@ final class NewsExportService
     /**
      * Return the total number of news records on the given PIDs.
      *
-     * Respects the same restriction as {@see self::fetchNewsPreview()} (deleted
-     * records excluded, hidden records counted).
+     * Respects the same restriction as {@see self::fetchNewsPreview()}: deleted
+     * records are always excluded, hidden records only when {@see $excludeDisabled}
+     * is true.
      *
-     * @param list<positive-int> $pids Storage PIDs.
+     * @param list<positive-int> $pids            Storage PIDs.
+     * @param bool               $excludeDisabled Also exclude hidden/disabled records (hidden=1).
      * @return int Number of matching records.
      */
-    public function countNews(array $pids): int
+    public function countNews(array $pids, bool $excludeDisabled = false): int
     {
         if ($pids === []) {
             return 0;
@@ -223,6 +225,11 @@ final class NewsExportService
         $queryBuilder->getRestrictions()
             ->removeAll()
             ->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+
+        if ($excludeDisabled) {
+            $queryBuilder->getRestrictions()
+                ->add(GeneralUtility::makeInstance(HiddenRestriction::class));
+        }
 
         try {
             return (int)$queryBuilder
