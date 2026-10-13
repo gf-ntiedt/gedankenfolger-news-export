@@ -190,6 +190,39 @@
             <trans-unit id="flash.csrfError.message">
                 <source>The form protection token was invalid. Please reload the page and try again.</source>
             </trans-unit>
+            <trans-unit id="flash.extensionNotInstalled.title">
+                <source>Extension not installed</source>
+            </trans-unit>
+            <trans-unit id="flash.extensionNotInstalled.message">
+                <source>The georgringer/news extension is not installed. Please install it before exporting.</source>
+            </trans-unit>
+            <trans-unit id="flash.exportError.message">
+                <source>Export failed. Details have been written to the TYPO3 log.</source>
+            </trans-unit>
+            <trans-unit id="flash.noFiles.title">
+                <source>No files found</source>
+            </trans-unit>
+            <trans-unit id="flash.noFiles.message">
+                <source>No local FAL files were found for the selected news records. Remote-storage files are not included.</source>
+            </trans-unit>
+            <trans-unit id="flash.zipError.title">
+                <source>ZIP error</source>
+            </trans-unit>
+            <trans-unit id="flash.zipTempFile.message">
+                <source>Could not create a temporary file for the ZIP archive.</source>
+            </trans-unit>
+            <trans-unit id="flash.zipCreate.message">
+                <source>Could not create ZIP archive.</source>
+            </trans-unit>
+            <trans-unit id="flash.zipAddFile.message">
+                <source>Could not add the file &quot;%s&quot; to the ZIP archive.</source>
+            </trans-unit>
+            <trans-unit id="flash.zipWrite.message">
+                <source>Could not write the ZIP archive.</source>
+            </trans-unit>
+            <trans-unit id="flash.zipRead.message">
+                <source>Could not read the ZIP archive.</source>
+            </trans-unit>
 
         </body>
     </file>

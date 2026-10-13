@@ -8,11 +8,15 @@ use Gedankenfolger\GedankenfolgerNewsExport\Pagination\NewsPreviewPaginator;
 use Gedankenfolger\GedankenfolgerNewsExport\Service\ExportOptions;
 use Gedankenfolger\GedankenfolgerNewsExport\Service\NewsExportService;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
+use TYPO3\CMS\Core\FormProtection\BackendFormProtection;
 use TYPO3\CMS\Core\FormProtection\FormProtectionFactory;
 use TYPO3\CMS\Core\Pagination\SimplePagination;
+use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
  * Backend module controller for EXT:gedankenfolger_news_export.
@@ -54,10 +58,12 @@ final class NewsExportController extends ActionController
     /**
      * @param ModuleTemplateFactory $moduleTemplateFactory Creates the backend module template.
      * @param NewsExportService     $exportService         Service that produces the export and the preview data.
+     * @param LoggerInterface       $logger                Receives the details of failed exports.
      */
     public function __construct(
         private readonly ModuleTemplateFactory $moduleTemplateFactory,
         private readonly NewsExportService $exportService,
+        private readonly LoggerInterface $logger,
     ) {}
 
     // -------------------------------------------------------------------------
@@ -102,7 +108,7 @@ final class NewsExportController extends ActionController
         $pagination  = new SimplePagination($paginator);
 
         // Generate fresh CSRF tokens – one per form action.
-        /** @var \TYPO3\CMS\Core\FormProtection\BackendFormProtection $formProtection */
+        /** @var BackendFormProtection $formProtection */
         $formProtection = GeneralUtility::makeInstance(FormProtectionFactory::class)
             ->createFromRequest($this->request);
         $csrfToken      = $formProtection->generateToken('news_export', 'export');
@@ -137,28 +143,20 @@ final class NewsExportController extends ActionController
     {
         // Guard: table must exist before any export attempt.
         if (!$this->exportService->isNewsTableAvailable()) {
-            $this->addFlashMessage(
-                'The georgringer/news extension is not installed. Please install it before exporting.',
-                'Extension not installed',
-                \TYPO3\CMS\Core\Type\ContextualFeedbackSeverity::ERROR
-            );
+            $this->addFlash('extensionNotInstalled', ContextualFeedbackSeverity::ERROR);
             return $this->redirect('index');
         }
 
         $body = (array)($this->request->getParsedBody() ?? []);
 
         // ---- CSRF validation -------------------------------------------------
-        /** @var \TYPO3\CMS\Core\FormProtection\BackendFormProtection $formProtection */
+        /** @var BackendFormProtection $formProtection */
         $formProtection = GeneralUtility::makeInstance(FormProtectionFactory::class)
             ->createFromRequest($this->request);
 
         $token = (string)($body['csrfToken'] ?? '');
         if (!$formProtection->validateToken($token, 'news_export', 'export')) {
-            $this->addFlashMessage(
-                'The form protection token was invalid. Please reload the page and try again.',
-                'Security error',
-                \TYPO3\CMS\Core\Type\ContextualFeedbackSeverity::ERROR
-            );
+            $this->addFlash('csrfError', ContextualFeedbackSeverity::ERROR);
             return $this->redirect('index');
         }
 
@@ -166,11 +164,7 @@ final class NewsExportController extends ActionController
         $options = ExportOptions::fromArray($body);
 
         if ($options->isEmpty()) {
-            $this->addFlashMessage(
-                'Please provide at least one storage PID or a specific news UID before exporting.',
-                'No records selected',
-                \TYPO3\CMS\Core\Type\ContextualFeedbackSeverity::WARNING
-            );
+            $this->addFlash('noRecords', ContextualFeedbackSeverity::WARNING);
             return $this->redirect('index');
         }
 
@@ -178,11 +172,8 @@ final class NewsExportController extends ActionController
         try {
             $xml = $this->exportService->exportToString($options);
         } catch (\Throwable $e) {
-            $this->addFlashMessage(
-                sprintf('Export failed: %s', $e->getMessage()),
-                'Export error',
-                \TYPO3\CMS\Core\Type\ContextualFeedbackSeverity::ERROR
-            );
+            $this->logger->error('News export failed: ' . $e->getMessage(), ['exception' => $e]);
+            $this->addFlash('exportError', ContextualFeedbackSeverity::ERROR);
             return $this->redirect('index');
         }
 
@@ -214,28 +205,20 @@ final class NewsExportController extends ActionController
     {
         // Guard: table must exist before any export attempt.
         if (!$this->exportService->isNewsTableAvailable()) {
-            $this->addFlashMessage(
-                'The georgringer/news extension is not installed. Please install it before exporting.',
-                'Extension not installed',
-                \TYPO3\CMS\Core\Type\ContextualFeedbackSeverity::ERROR
-            );
+            $this->addFlash('extensionNotInstalled', ContextualFeedbackSeverity::ERROR);
             return $this->redirect('index');
         }
 
         $body = (array)($this->request->getParsedBody() ?? []);
 
         // ---- CSRF validation -------------------------------------------------
-        /** @var \TYPO3\CMS\Core\FormProtection\BackendFormProtection $formProtection */
+        /** @var BackendFormProtection $formProtection */
         $formProtection = GeneralUtility::makeInstance(FormProtectionFactory::class)
             ->createFromRequest($this->request);
 
         $token = (string)($body['csrfTokenFiles'] ?? '');
         if (!$formProtection->validateToken($token, 'news_export', 'downloadFiles')) {
-            $this->addFlashMessage(
-                'The form protection token was invalid. Please reload the page and try again.',
-                'Security error',
-                \TYPO3\CMS\Core\Type\ContextualFeedbackSeverity::ERROR
-            );
+            $this->addFlash('csrfError', ContextualFeedbackSeverity::ERROR);
             return $this->redirect('index');
         }
 
@@ -243,11 +226,7 @@ final class NewsExportController extends ActionController
         $options = ExportOptions::fromArray($body);
 
         if ($options->isEmpty()) {
-            $this->addFlashMessage(
-                'Please provide at least one storage PID or a specific news UID before exporting.',
-                'No records selected',
-                \TYPO3\CMS\Core\Type\ContextualFeedbackSeverity::WARNING
-            );
+            $this->addFlash('noRecords', ContextualFeedbackSeverity::WARNING);
             return $this->redirect('index');
         }
 
@@ -255,11 +234,7 @@ final class NewsExportController extends ActionController
         $files = $this->exportService->collectReferencedLocalFiles($options);
 
         if ($files === []) {
-            $this->addFlashMessage(
-                'No local FAL files were found for the selected news records. Remote-storage files are not included.',
-                'No files found',
-                \TYPO3\CMS\Core\Type\ContextualFeedbackSeverity::INFO
-            );
+            $this->addFlash('noFiles', ContextualFeedbackSeverity::INFO);
             return $this->redirect('index');
         }
 
@@ -267,22 +242,14 @@ final class NewsExportController extends ActionController
         $tmpFile = tempnam(sys_get_temp_dir(), 'news_files_');
 
         if ($tmpFile === false) {
-            $this->addFlashMessage(
-                'Could not create a temporary file for the ZIP archive.',
-                'ZIP error',
-                \TYPO3\CMS\Core\Type\ContextualFeedbackSeverity::ERROR
-            );
+            $this->addFlash('zipTempFile', ContextualFeedbackSeverity::ERROR, [], 'zipError');
             return $this->redirect('index');
         }
 
         $zip = new \ZipArchive();
         if ($zip->open($tmpFile, \ZipArchive::OVERWRITE) !== true) {
             @unlink($tmpFile);
-            $this->addFlashMessage(
-                'Could not create ZIP archive.',
-                'ZIP error',
-                \TYPO3\CMS\Core\Type\ContextualFeedbackSeverity::ERROR
-            );
+            $this->addFlash('zipCreate', ContextualFeedbackSeverity::ERROR, [], 'zipError');
             return $this->redirect('index');
         }
 
@@ -290,22 +257,14 @@ final class NewsExportController extends ActionController
             if (!$zip->addFile($entry['absolute'], $entry['zipPath'])) {
                 $zip->close();
                 @unlink($tmpFile);
-                $this->addFlashMessage(
-                    sprintf('Could not add the file "%s" to the ZIP archive.', $entry['zipPath']),
-                    'ZIP error',
-                    \TYPO3\CMS\Core\Type\ContextualFeedbackSeverity::ERROR
-                );
+                $this->addFlash('zipAddFile', ContextualFeedbackSeverity::ERROR, [$entry['zipPath']], 'zipError');
                 return $this->redirect('index');
             }
         }
 
         if (!$zip->close()) {
             @unlink($tmpFile);
-            $this->addFlashMessage(
-                'Could not write the ZIP archive.',
-                'ZIP error',
-                \TYPO3\CMS\Core\Type\ContextualFeedbackSeverity::ERROR
-            );
+            $this->addFlash('zipWrite', ContextualFeedbackSeverity::ERROR, [], 'zipError');
             return $this->redirect('index');
         }
 
@@ -313,11 +272,7 @@ final class NewsExportController extends ActionController
         @unlink($tmpFile);
 
         if ($zipContent === false) {
-            $this->addFlashMessage(
-                'Could not read the ZIP archive.',
-                'ZIP error',
-                \TYPO3\CMS\Core\Type\ContextualFeedbackSeverity::ERROR
-            );
+            $this->addFlash('zipRead', ContextualFeedbackSeverity::ERROR, [], 'zipError');
             return $this->redirect('index');
         }
 
@@ -337,6 +292,27 @@ final class NewsExportController extends ActionController
     // -------------------------------------------------------------------------
     // Helpers
     // -------------------------------------------------------------------------
+
+    /**
+     * Add a flash message whose title and text come from the language file.
+     *
+     * Looks up `flash.<key>.message` and `flash.<titleKey>.title` in `locallang.xlf`.
+     *
+     * @param string                     $key       Label key without the `flash.` prefix and the `.message` suffix.
+     * @param ContextualFeedbackSeverity $severity  Severity of the message.
+     * @param list<string>               $arguments Values for the placeholders of the message text.
+     * @param string|null                $titleKey  Label key of the title when it differs from `$key`.
+     */
+    private function addFlash(string $key, ContextualFeedbackSeverity $severity, array $arguments = [], ?string $titleKey = null): void
+    {
+        $prefix = 'LLL:EXT:gedankenfolger_news_export/Resources/Private/Language/locallang.xlf:flash.';
+
+        $this->addFlashMessage(
+            LocalizationUtility::translate($prefix . $key . '.message', null, $arguments) ?? $key,
+            LocalizationUtility::translate($prefix . ($titleKey ?? $key) . '.title') ?? '',
+            $severity
+        );
+    }
 
     /**
      * Determine the list of PIDs to use for the preview query.

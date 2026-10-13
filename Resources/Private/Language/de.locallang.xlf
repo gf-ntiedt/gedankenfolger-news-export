@@ -172,6 +172,50 @@
                 <source>The form protection token was invalid. Please reload the page and try again.</source>
                 <target>Das Formularschutz-Token war ungültig. Bitte laden Sie die Seite neu und versuchen Sie es erneut.</target>
             </trans-unit>
+            <trans-unit id="flash.extensionNotInstalled.title">
+                <source>Extension not installed</source>
+                <target>Extension nicht installiert</target>
+            </trans-unit>
+            <trans-unit id="flash.extensionNotInstalled.message">
+                <source>The georgringer/news extension is not installed. Please install it before exporting.</source>
+                <target>Die Extension georgringer/news ist nicht installiert. Bitte installieren Sie sie vor dem Export.</target>
+            </trans-unit>
+            <trans-unit id="flash.exportError.message">
+                <source>Export failed. Details have been written to the TYPO3 log.</source>
+                <target>Export fehlgeschlagen. Die Details wurden in das TYPO3-Log geschrieben.</target>
+            </trans-unit>
+            <trans-unit id="flash.noFiles.title">
+                <source>No files found</source>
+                <target>Keine Dateien gefunden</target>
+            </trans-unit>
+            <trans-unit id="flash.noFiles.message">
+                <source>No local FAL files were found for the selected news records. Remote-storage files are not included.</source>
+                <target>Für die ausgewählten News-Datensätze wurden keine lokalen FAL-Dateien gefunden. Dateien aus Remote-Speichern sind nicht enthalten.</target>
+            </trans-unit>
+            <trans-unit id="flash.zipError.title">
+                <source>ZIP error</source>
+                <target>ZIP-Fehler</target>
+            </trans-unit>
+            <trans-unit id="flash.zipTempFile.message">
+                <source>Could not create a temporary file for the ZIP archive.</source>
+                <target>Für das ZIP-Archiv konnte keine temporäre Datei erstellt werden.</target>
+            </trans-unit>
+            <trans-unit id="flash.zipCreate.message">
+                <source>Could not create ZIP archive.</source>
+                <target>Das ZIP-Archiv konnte nicht erstellt werden.</target>
+            </trans-unit>
+            <trans-unit id="flash.zipAddFile.message">
+                <source>Could not add the file &quot;%s&quot; to the ZIP archive.</source>
+                <target>Die Datei „%s“ konnte dem ZIP-Archiv nicht hinzugefügt werden.</target>
+            </trans-unit>
+            <trans-unit id="flash.zipWrite.message">
+                <source>Could not write the ZIP archive.</source>
+                <target>Das ZIP-Archiv konnte nicht geschrieben werden.</target>
+            </trans-unit>
+            <trans-unit id="flash.zipRead.message">
+                <source>Could not read the ZIP archive.</source>
+                <target>Das ZIP-Archiv konnte nicht gelesen werden.</target>
+            </trans-unit>
 
         </body>
     </file>
