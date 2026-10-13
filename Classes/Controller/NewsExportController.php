@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Gedankenfolger\GedankenfolgerNewsExport\Controller;
 
 use Gedankenfolger\GedankenfolgerNewsExport\Pagination\NewsPreviewPaginator;
+use Gedankenfolger\GedankenfolgerNewsExport\Service\ExportAccessDeniedException;
+use Gedankenfolger\GedankenfolgerNewsExport\Service\ExportAccessGuard;
 use Gedankenfolger\GedankenfolgerNewsExport\Service\ExportOptions;
 use Gedankenfolger\GedankenfolgerNewsExport\Service\NewsExportService;
 use Psr\Http\Message\ResponseInterface;
@@ -59,11 +61,13 @@ final class NewsExportController extends ActionController
      * @param ModuleTemplateFactory $moduleTemplateFactory Creates the backend module template.
      * @param NewsExportService     $exportService         Service that produces the export and the preview data.
      * @param LoggerInterface       $logger                Receives the details of failed exports.
+     * @param ExportAccessGuard     $accessGuard           Checks the permissions of the backend user for the preview.
      */
     public function __construct(
         private readonly ModuleTemplateFactory $moduleTemplateFactory,
         private readonly NewsExportService $exportService,
         private readonly LoggerInterface $logger,
+        private readonly ExportAccessGuard $accessGuard,
     ) {}
 
     // -------------------------------------------------------------------------
@@ -95,6 +99,15 @@ final class NewsExportController extends ActionController
         // no explicit PID is set via the form.
         $formData = (array)($this->request->getQueryParams()['tx_gedankenfolger_news_export_gedankenfolger_news_export'] ?? []);
         $pids     = $this->resolvePids($formData, $pageId);
+
+        // Show no preview rows for pages the backend user may not read.
+        try {
+            $this->accessGuard->assertCanReadNews($pids, []);
+        } catch (ExportAccessDeniedException $e) {
+            $this->logger->warning('News export preview denied: ' . $e->getMessage());
+            $this->addFlash('accessDenied', ContextualFeedbackSeverity::ERROR);
+            $pids = [];
+        }
 
         // Load records for the preview table (paginated).
         $excludeDisabled = (bool)($formData['excludeDisabled'] ?? false);
@@ -171,6 +184,10 @@ final class NewsExportController extends ActionController
         // ---- Run export -------------------------------------------------------
         try {
             $xml = $this->exportService->exportToString($options);
+        } catch (ExportAccessDeniedException $e) {
+            $this->logger->warning('News export denied: ' . $e->getMessage());
+            $this->addFlash('accessDenied', ContextualFeedbackSeverity::ERROR);
+            return $this->redirect('index');
         } catch (\Throwable $e) {
             $this->logger->error('News export failed: ' . $e->getMessage(), ['exception' => $e]);
             $this->addFlash('exportError', ContextualFeedbackSeverity::ERROR);
@@ -231,7 +248,13 @@ final class NewsExportController extends ActionController
         }
 
         // ---- Collect referenced local files ----------------------------------
-        $files = $this->exportService->collectReferencedLocalFiles($options);
+        try {
+            $files = $this->exportService->collectReferencedLocalFiles($options);
+        } catch (ExportAccessDeniedException $e) {
+            $this->logger->warning('News file download denied: ' . $e->getMessage());
+            $this->addFlash('accessDenied', ContextualFeedbackSeverity::ERROR);
+            return $this->redirect('index');
+        }
 
         if ($files === []) {
             $this->addFlash('noFiles', ContextualFeedbackSeverity::INFO);

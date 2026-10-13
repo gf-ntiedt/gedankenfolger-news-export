@@ -188,6 +188,14 @@
                 <source>Export failed. Details have been written to the TYPO3 log.</source>
                 <target>Export fehlgeschlagen. Die Details wurden in das TYPO3-Log geschrieben.</target>
             </trans-unit>
+            <trans-unit id="flash.accessDenied.title">
+                <source>Access denied</source>
+                <target>Zugriff verweigert</target>
+            </trans-unit>
+            <trans-unit id="flash.accessDenied.message">
+                <source>You do not have permission to read the selected pages, news records or files.</source>
+                <target>Sie haben keine Berechtigung, die ausgewählten Seiten, News-Datensätze oder Dateien zu lesen.</target>
+            </trans-unit>
             <trans-unit id="flash.noFiles.title">
                 <source>No files found</source>
                 <target>Keine Dateien gefunden</target>

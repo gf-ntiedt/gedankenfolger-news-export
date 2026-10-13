@@ -214,6 +214,7 @@ vendor/bin/typo3 news:export --pid=42 --exclude-disabled</code></pre>
     Notes
 </h3>
 <ul>
+    <li>Permissions: administrators are not restricted. Other backend users need the <strong>Tables (listing)</strong> permission for <code>tx_news_domain_model_news</code>, read access to the page of every selected news record (page permissions and web mount), and file mounts that contain every referenced file (ZIP download). Otherwise the preview stays empty and the export or ZIP download is refused with an error message.</li>
     <li>Soft-deleted records (<code>deleted=1</code>) are always excluded by <code>EXT:impexp</code> and cannot be included in an export.</li>
     <li>Remote-storage FAL files (S3, SFTP, etc.) are not included in the ZIP download — only files on local-driver storages are packaged.</li>
     <li>The <code>LOST RELATION (Path: /)</code> warning in the import preview refers to the page-tree path of <code>sys_file</code> records (which always have <code>pid=0</code> = root). It is not a filesystem path and is harmless on same-server imports.</li>

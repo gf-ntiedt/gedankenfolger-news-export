@@ -66,12 +66,14 @@ final class NewsExportService
     ];
 
     /**
-     * @param NewsFieldMapper $fieldMapper    Applies the optional cross-version field mapping.
-     * @param ConnectionPool  $connectionPool Provides database connections and query builders.
+     * @param NewsFieldMapper   $fieldMapper    Applies the optional cross-version field mapping.
+     * @param ConnectionPool    $connectionPool Provides database connections and query builders.
+     * @param ExportAccessGuard $accessGuard    Checks the permissions of the current backend user.
      */
     public function __construct(
         private readonly NewsFieldMapper $fieldMapper,
         private readonly ConnectionPool $connectionPool,
+        private readonly ExportAccessGuard $accessGuard,
     ) {}
 
     // -------------------------------------------------------------------------
@@ -114,9 +116,12 @@ final class NewsExportService
      * @return string Raw t3d XML content.
      * @throws \InvalidArgumentException When the file type is not supported by EXT:impexp, e.g. `t3d_compressed`
      *                                   on a PHP build without zlib (`gzcompress()`).
+     * @throws ExportAccessDeniedException When the current backend user may not read the selected records.
      */
     public function exportToString(ExportOptions $options): string
     {
+        $this->accessGuard->assertCanReadNews($options->pids, $options->uids);
+
         $export = $this->createExport($options);
         $export->process();
 
@@ -301,9 +306,12 @@ final class NewsExportService
      *
      * @param ExportOptions $options Validated export parameters.
      * @return list<array{absolute: string, zipPath: string}>
+     * @throws ExportAccessDeniedException When the current backend user may not read the records or one of the files.
      */
     public function collectReferencedLocalFiles(ExportOptions $options): array
     {
+        $this->accessGuard->assertCanReadNews($options->pids, $options->uids);
+
         // ---- 1. Resolve news UIDs for the given PIDs ----------------------------
 
         $newsUids = $options->uids;
@@ -367,6 +375,8 @@ final class NewsExportService
         if ($fileUids === []) {
             return [];
         }
+
+        $this->accessGuard->assertCanReadFiles(array_map('intval', $fileUids));
 
         // ---- 3. Fetch sys_file rows (storage + identifier) ----------------------
 
