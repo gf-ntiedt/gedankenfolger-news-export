@@ -6,7 +6,6 @@ namespace Gedankenfolger\GedankenfolgerNewsExport\Command;
 
 use Gedankenfolger\GedankenfolgerNewsExport\Service\ExportOptions;
 use Gedankenfolger\GedankenfolgerNewsExport\Service\NewsExportService;
-use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -43,17 +42,19 @@ use TYPO3\CMS\Core\Core\Bootstrap;
  * - `0` SUCCESS – export written to output file.
  * - `1` ERROR   – see the error message printed to STDERR.
  *
+ * ## Registration
+ * The command is registered only through the `console.command` tag in
+ * Services.yaml. Do not add the #[AsCommand] attribute as well: TYPO3 would
+ * then see two tags and register the command as an alias of itself, which
+ * hides it from `typo3 list`.
+ *
  * ## Scheduler support
- * The command is tagged with `schedulable: true` in Services.yaml and can
- * therefore be configured as a recurring TYPO3 Scheduler task.
+ * The tag sets `schedulable: true`, so the command can be configured as a
+ * recurring TYPO3 Scheduler task.
  *
  * @author  Niels Tiedt <niels.tiedt@gedankenfolger.de>
  * @company Gedankenfolger GmbH
  */
-#[AsCommand(
-    name: 'news:export',
-    description: 'Export georgringer/news records as a .t3d file',
-)]
 final class ExportNewsCommand extends Command
 {
     /**
