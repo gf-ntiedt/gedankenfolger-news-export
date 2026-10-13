@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [13.1.4] - 2026-10-13
+
+### Fixed
+
+- **license:** Replace GPL v3 text with GPL v2 to match the declared GPL-2.0-or-later license (2cad6ed)
+
+
 ## [13.1.3] - 2026-10-06
 
 ### Fixed
