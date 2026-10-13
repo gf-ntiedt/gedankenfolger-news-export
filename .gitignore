@@ -32,6 +32,7 @@ config/system/additional.php
 .idea/
 *.iml
 CLAUDE.md
+TODO.md
 
 # Logdateien
 *.log
