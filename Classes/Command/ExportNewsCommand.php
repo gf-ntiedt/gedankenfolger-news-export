@@ -172,6 +172,22 @@ final class ExportNewsCommand extends Command
             return Command::FAILURE;
         }
 
+        // ---- Validate output path before the (possibly long) export ----------
+        $outputPath = $this->resolveOutputPath(
+            (string)($input->getOption('output') ?? ''),
+            $options->fileType
+        );
+
+        $outputError = $this->validateOutputPath($outputPath);
+        if ($outputError !== null) {
+            $io->error($outputError);
+            return Command::FAILURE;
+        }
+
+        if (is_file($outputPath)) {
+            $io->warning(sprintf('The existing file will be overwritten: %s', $outputPath));
+        }
+
         // ---- Run export -------------------------------------------------------
         $io->section('Running news export…');
 
@@ -192,11 +208,6 @@ final class ExportNewsCommand extends Command
         }
 
         // ---- Write output file -----------------------------------------------
-        $outputPath = $this->resolveOutputPath(
-            (string)($input->getOption('output') ?? ''),
-            $options->fileType
-        );
-
         if (file_put_contents($outputPath, $xml) === false) {
             $io->error(sprintf('Could not write output file: %s', $outputPath));
             return Command::FAILURE;
@@ -234,6 +245,30 @@ final class ExportNewsCommand extends Command
                 array_map('trim', explode(',', $raw))
             )
         );
+    }
+
+    /**
+     * Check that the output file can be written.
+     *
+     * @param string $path Absolute output file path.
+     * @return string|null Error message, or null when the path is usable.
+     */
+    private function validateOutputPath(string $path): ?string
+    {
+        if (is_dir($path)) {
+            return sprintf('The output path is a directory, not a file: %s', $path);
+        }
+
+        $directory = dirname($path);
+        if (!is_dir($directory)) {
+            return sprintf('The output directory does not exist: %s', $directory);
+        }
+
+        if (is_file($path) ? !is_writable($path) : !is_writable($directory)) {
+            return sprintf('The output path is not writable: %s', $path);
+        }
+
+        return null;
     }
 
     /**
