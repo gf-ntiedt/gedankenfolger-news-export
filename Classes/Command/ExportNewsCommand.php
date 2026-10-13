@@ -22,8 +22,8 @@ use TYPO3\CMS\Core\Core\Bootstrap;
  * # Export all news from storage PID 42 (XML format, no field mapping):
  * vendor/bin/typo3 news:export --pid=42
  *
- * # Export with cross-version field mapping and compressed output:
- * vendor/bin/typo3 news:export --pid=42 --type=t3d_compressed --field-map=news-v10-to-v13
+ * # Export with a field mapping (Configuration/FieldMappings/my-mapping.yaml) and compressed output:
+ * vendor/bin/typo3 news:export --pid=42 --type=t3d_compressed --field-map=my-mapping
  *
  * # Export specific news records only:
  * vendor/bin/typo3 news:export --pid=42 --uid=101,102,103
@@ -109,7 +109,7 @@ final class ExportNewsCommand extends Command
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Name of the YAML field-mapping configuration to apply (file stem without .yaml extension). '
-                . 'Example: "news-v10-to-v13".',
+                . 'Example: "my-mapping".',
                 '',
             )
             ->addOption(
@@ -170,6 +170,19 @@ final class ExportNewsCommand extends Command
         if ($options->isEmpty()) {
             $io->error('Please provide at least one --pid or --uid option.');
             return Command::FAILURE;
+        }
+
+        // ---- Validate the field map: an unknown name would silently do nothing ----
+        if ($options->fieldMap !== '') {
+            $availableMaps = $this->exportService->availableFieldMaps();
+            if (!in_array($options->fieldMap, $availableMaps, true)) {
+                $io->error(sprintf(
+                    'Field map "%s" not found. Available field maps: %s',
+                    $options->fieldMap,
+                    $availableMaps === [] ? 'none (add a *.yaml file to Configuration/FieldMappings/)' : implode(', ', $availableMaps)
+                ));
+                return Command::FAILURE;
+            }
         }
 
         // ---- Validate output path before the (possibly long) export ----------
