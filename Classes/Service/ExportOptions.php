@@ -19,7 +19,7 @@ final class ExportOptions
 {
     /**
      * @param list<positive-int> $pids            Storage PIDs whose news records should be exported.
-     * @param list<positive-int> $uids            Specific news UIDs to export (overrides PID selection when non-empty).
+     * @param list<positive-int> $uids            Specific news UIDs to export (added to the PID selection, not replacing it).
      * @param string             $fileType        t3d file type: 'xml', 't3d', or 't3d_compressed'.
      * @param string             $fieldMap        Name of the YAML field-mapping config to apply (empty = none).
      * @param bool               $includeFiles    Whether to embed FAL file binaries inside the .t3d archive.

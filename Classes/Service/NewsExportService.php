@@ -493,7 +493,7 @@ final class NewsExportService
             $export->setList($listSelectors);
         }
 
-        // Export specific news UIDs (takes precedence alongside PID selection).
+        // Export specific news UIDs in addition to the PID selection (union of both).
         if ($options->uids !== []) {
             $recordSelectors = array_map(
                 static fn(int $uid): string => 'tx_news_domain_model_news:' . $uid,
