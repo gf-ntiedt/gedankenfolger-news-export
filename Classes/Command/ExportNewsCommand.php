@@ -56,6 +56,9 @@ use TYPO3\CMS\Core\Core\Bootstrap;
 )]
 final class ExportNewsCommand extends Command
 {
+    /**
+     * @param NewsExportService $exportService Service that produces the t3d export.
+     */
     public function __construct(
         private readonly NewsExportService $exportService,
     ) {

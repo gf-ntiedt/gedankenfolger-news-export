@@ -51,6 +51,10 @@ final class NewsExportController extends ActionController
     /** Number of news rows displayed per page in the preview table. */
     private const ITEMS_PER_PAGE = 20;
 
+    /**
+     * @param ModuleTemplateFactory $moduleTemplateFactory Creates the backend module template.
+     * @param NewsExportService     $exportService         Service that produces the export and the preview data.
+     */
     public function __construct(
         private readonly ModuleTemplateFactory $moduleTemplateFactory,
         private readonly NewsExportService $exportService,
@@ -64,6 +68,7 @@ final class NewsExportController extends ActionController
      * Display the export configuration form and a paginated news preview table.
      *
      * @param int $currentPage Current pagination page (1-based).
+     * @return ResponseInterface Rendered backend module response.
      */
     public function indexAction(int $currentPage = 1): ResponseInterface
     {
@@ -120,6 +125,8 @@ final class NewsExportController extends ActionController
      *
      * On any validation error the user is redirected back to `indexAction` with
      * an error flash message so that the form can be corrected.
+     *
+     * @return ResponseInterface The .t3d download, or a redirect to `indexAction` on error.
      */
     public function exportAction(): ResponseInterface
     {
@@ -195,6 +202,8 @@ final class NewsExportController extends ActionController
      * Only files on local-driver storages are included. Files that do not
      * exist on disk are silently skipped. When no local files are found the
      * user is redirected back to indexAction with an info flash message.
+     *
+     * @return ResponseInterface The ZIP download, or a redirect to `indexAction` on error.
      */
     public function downloadFilesAction(): ResponseInterface
     {

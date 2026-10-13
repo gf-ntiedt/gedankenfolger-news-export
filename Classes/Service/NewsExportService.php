@@ -65,6 +65,10 @@ final class NewsExportService
         'sys_file_reference',
     ];
 
+    /**
+     * @param NewsFieldMapper $fieldMapper    Applies the optional cross-version field mapping.
+     * @param ConnectionPool  $connectionPool Provides database connections and query builders.
+     */
     public function __construct(
         private readonly NewsFieldMapper $fieldMapper,
         private readonly ConnectionPool $connectionPool,
@@ -80,6 +84,8 @@ final class NewsExportService
      * Used by the backend module and CLI command to show a meaningful error
      * instead of a raw Doctrine exception when the georgringer/news extension
      * is not installed on the current system.
+     *
+     * @return bool True when the table exists and can be queried.
      */
     public function isNewsTableAvailable(): bool
     {
@@ -203,6 +209,7 @@ final class NewsExportService
      * records excluded, hidden records counted).
      *
      * @param list<positive-int> $pids Storage PIDs.
+     * @return int Number of matching records.
      */
     public function countNews(array $pids): int
     {

@@ -48,6 +48,7 @@ final class ExportOptions
      * - title is stripped of HTML tags and truncated to 255 characters.
      *
      * @param array<string, mixed> $data Raw input data (e.g. $_POST or CLI options).
+     * @return self Validated and sanitised options.
      */
     public static function fromArray(array $data): self
     {
@@ -64,6 +65,8 @@ final class ExportOptions
 
     /**
      * Return true when no PIDs and no UIDs are set, meaning there is nothing to export.
+     *
+     * @return bool True when nothing is selected for export.
      */
     public function isEmpty(): bool
     {
